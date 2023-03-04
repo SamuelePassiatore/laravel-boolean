@@ -10,10 +10,19 @@ class CardController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cards = Card::all();
-        return view('cards.index', compact('cards'));
+        $search = $request->query('search');
+        $query = Card::query();
+        if ($search) {
+            $query->where('name', 'LIKE', "%$search%")
+                ->orWhere('type', 'LIKE', "%$search%")
+                ->orWhere('edition', 'LIKE', "%$search%")
+                ->orWhere('str', 'LIKE', "%$search%")
+                ->orWhere('constitution', 'LIKE', "%$search%");
+        }
+        $cards = $query->get();
+        return view('cards.index', compact('cards', 'search'));
     }
 
     /**
